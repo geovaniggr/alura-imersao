@@ -6,7 +6,7 @@
         </div>
         <div
             class="relative circle-decoration cursor-pointer bg-ocean-800 p-4 rounded-md border border-gray-600 hover:border-ocean-300"
-            @click="emit('change-lesson', id)"
+            @click="emit('change-lesson', id, idx)"
         >
             <time class="text-ocean-300 mr-2"> {{ hour }} </time>
             <span>{{ title }}</span>
@@ -17,7 +17,8 @@
 import { splitedAndFormattedDate } from '../../utils/date';
 export default {
     props: {
-        lecture: { type: Object, required: true }
+        lecture: { type: Object, required: true },
+        index: { type: Number, required: true }
     },
     setup(props, { emit }) {
         const [weekday, date, hour] = splitedAndFormattedDate(props.lecture.release_date);
@@ -28,14 +29,18 @@ export default {
             hour,
             title: props.lecture.title,
             id: props.lecture.id,
-            emit
+            emit,
+            idx: props.index
         };
     }
 };
 </script>
 <style lang="postcss" scoped>
-.circle-decoration::before,
-.circle-decoration::after {
+ol.active > .circle-decoration {
+    @apply border-ocean-300;
+}
+
+.circle-decoration::before {
     content: '';
     display: block;
     position: absolute;
@@ -49,9 +54,8 @@ export default {
     border: 1px solid #4b5563;
 }
 
-.circle-decoration .active,
-.circle-decoration:hover::before,
-.circle-decoration:hover::after {
+ol.active > .circle-decoration::before,
+.circle-decoration:hover::before {
     border-color: #167bf7;
 }
 </style>

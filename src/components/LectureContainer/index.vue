@@ -33,20 +33,23 @@
             <ul v-if="state.isLecture">
                 <lesson-item
                     v-for="(lesson, index) of state.lectures"
+                    class="last:border-0"
+                    :class="{ active: state.activeLecture === index }"
                     :key="index"
                     :lecture="lesson"
+                    :index="index"
                     @change-lesson="handleChangeLesson"
-                    class="last:border-0"
-                    :active="lesson.isActive || lesson.id === state.actual.id"
                 />
             </ul>
             <ul v-else>
                 <lesson-item
                     v-for="(lesson, index) of state.lives"
+                    class="last:border-0"
+                    :class="{ active: state.activeLecture === index }"
                     :key="index"
                     :lecture="lesson"
+                    :index="index"
                     @change-lesson="handleChangeLesson"
-                    class="last:border-0"
                 />
             </ul>
         </aside>
@@ -153,7 +156,8 @@ export default {
             },
             lectures: lectures,
             lives: lives,
-            isLecture: true
+            isLecture: true,
+            activeLecture: 0
         });
 
         function urlToEmbeded(rawURL) {
@@ -163,10 +167,13 @@ export default {
         }
 
         function handleChangeType() {
+            state.activeLecture = 0;
             state.isLecture = !state.isLecture;
         }
 
-        function handleChangeLesson(id) {
+        function handleChangeLesson(id, index) {
+            state.activeLecture = index;
+
             if (state.isLecture) {
                 const nextLecture = state.lectures.find(lecture => lecture.id === id);
 
@@ -177,11 +184,26 @@ export default {
             }
         }
 
+        function handleChangeLesson2(id) {
+            if (state.isLecture) {
+                const nextLecture = state.lectures.find(lecture => lecture.id === id);
+
+                state.lectures = state.lectures.map(lecture => ({ ...lecture, isActive: lecture.id === id }));
+                state.actual = nextLecture;
+            } else {
+                const nextLive = state.lives.find(live => live.id === id);
+
+                state.lives = state.lives.map(live => ({ ...live, isActive: live.id === id }));
+                state.actual = nextLive;
+            }
+        }
+
         return {
             cards,
             state,
             lectures,
             handleChangeLesson,
+            handleChangeLesson2,
             handleChangeType,
             urlToEmbeded
         };
